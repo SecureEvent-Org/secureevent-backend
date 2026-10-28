@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Base de Datos PostgreSQL con extensión pgvector
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: secureevent_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-secureuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-securepass}
+      POSTGRES_DB: ${POSTGRES_DB:-secureevent_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Broker MQTT EMQX para la recepción de beacons BLE desde Gateways
+  mqtt-broker:
+    image: emqx/emqx:5.3.0
+    container_name: secureevent_mqtt
+    restart: always
+    ports:
+      - "1883:1883"     # Puerto TCP MQTT estándar
+      - "8083:8083"     # Puerto WebSockets MQTT
+      - "18083:18083"   # Dashboard Web de Administración EMQX (admin/public)
+    environment:
+      - "EMQX_NODE_NAME=emqx@node1.emqx.com"
+
+volumes:
+  postgres_data:
