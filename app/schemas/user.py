@@ -1,9 +1,8 @@
 import uuid
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, Literal
 from app.models.user import UserRole
 
-# Esquema para responder los datos de un usuario registrado
 class UserResponse(BaseModel):
     id: uuid.UUID
     full_name: str
@@ -15,3 +14,12 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+# Nuevo esquema para la respuesta del punto de acceso
+class GateVerificationResponse(BaseModel):
+    access: Literal["granted", "denied"]
+    message: str
+    cosine_distance: Optional[float] = None
+    similarity_percentage: Optional[float] = None
+    processing_time_ms: float
+    user: Optional[UserResponse] = None

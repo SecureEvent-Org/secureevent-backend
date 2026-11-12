@@ -11,3 +11,5 @@ werkzeug>=3.0.0
 python-multipart==0.0.9
 paho-mqtt==1.6.1
 python-dotenv==1.0.1
+pyjwt>=2.8.0
+qrcode[pil]>=7.4.2

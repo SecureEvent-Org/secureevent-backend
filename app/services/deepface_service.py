@@ -5,19 +5,31 @@ import logging
 logger = logging.getLogger(__name__)
 
 class BiometricService:
-    @staticmethod
-    def extract_embedding(image_path_or_array) -> list[float]:
+    def __init__(self):
+        self.model_name = "Facenet"
+
+    def preload_model(self):
         """
-        Extrae un vector biométrico de 128 o 512 dimensiones
-        utilizando el modelo FaceNet a través de DeepFace.
+        Precarga los pesos del modelo FaceNet en memoria RAM al arrancar
+        para garantizar respuestas en puerta inferiores a 2 segundos.
+        """
+        try:
+            logger.info(f"Precargando modelo biométrico {self.model_name} en memoria...")
+            DeepFace.build_model(self.model_name)
+            logger.info(f"Modelo {self.model_name} cargado y listo en memoria.")
+        except Exception as e:
+            logger.error(f"Error precargando el modelo {self.model_name}: {str(e)}")
+
+    def extract_embedding(self, image_path_or_array) -> list[float]:
+        """
+        Extrae un vector biométrico de 128 dimensiones usando el modelo precargado.
         """
         try:
             embeddings = DeepFace.represent(
                 img_path=image_path_or_array,
-                model_name="Facenet",
+                model_name=self.model_name,
                 enforce_detection=True
             )
-            # Retorna la representación vectorial de la primera cara detectada
             return embeddings[0]["embedding"]
         except Exception as e:
             logger.error(f"Error extrayendo embedding facial: {str(e)}")
